@@ -1,0 +1,237 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIP SMALL | MG THUNGSONG</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;400;500&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Kanit', sans-serif; color: #1e293b; }
+        .btn-anim { transition: all 0.3s ease; }
+        .btn-anim:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        
+        /* สไตล์สำหรับการสลับรูปภาพ */
+        #main-image { transition: opacity 0.2s ease-in-out; }
+        .thumb-active { outline: 2px solid #f97316; opacity: 1 !important; }
+        #album-lightbox { transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out; }
+        #album-lightbox.is-open { opacity: 1; visibility: visible; }
+        body.album-open { overflow: hidden; }
+    </style>
+</head>
+<body class="bg-white">
+
+    <nav class="p-8">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="index.html" class="text-slate-400 hover:text-orange-500 transition-colors flex items-center gap-2 text-sm uppercase tracking-widest">
+                <i class="fas fa-arrow-left"></i> กลับหน้าหลัก
+            </a>
+            <div class="text-xl tracking-tighter">
+                <span class="font-semibold text-slate-800">MG</span> <span class="text-orange-500 font-semibold">THUNGSONG</span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-6 py-12">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+            
+            <div class="space-y-4">
+                <div class="rounded-sm overflow-hidden shadow-xl aspect-video md:aspect-square bg-gray-100 relative group">
+                    <button type="button" onclick="openAlbum()" class="w-full h-full block" aria-label="Open room album">
+                        <img id="main-image" src="https://i.ibb.co/wFXBMCSz/small111111.png" class="w-full h-full object-cover cursor-zoom-in">
+                    </button>
+                    <button type="button" onclick="openAlbum()" class="absolute bottom-4 right-4 bg-white/90 text-slate-800 px-4 py-3 rounded-sm shadow-lg backdrop-blur-sm btn-anim text-xs uppercase tracking-[0.2em] font-semibold flex items-center gap-2">
+                        <i class="fas fa-images text-orange-500"></i> View Album
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-4 gap-2 md:gap-4">
+                    <div class="aspect-video bg-gray-100 rounded-sm overflow-hidden">
+                        <img src="https://i.ibb.co/wFXBMCSz/small111111.png" 
+                             onclick="changeImage(this)"
+                             class="thumb-img thumb-active w-full h-full object-cover opacity-60 hover:opacity-100 cursor-pointer transition-opacity">
+                    </div>
+                    <div class="aspect-video bg-gray-100 rounded-sm overflow-hidden">
+                        <img src="https://i.ibb.co/xp3JZPp/small222.png" 
+                             onclick="changeImage(this)"
+                             class="thumb-img w-full h-full object-cover opacity-60 hover:opacity-100 cursor-pointer transition-opacity">
+                    </div>
+                    <div class="aspect-video bg-gray-100 rounded-sm overflow-hidden">
+                        <img src="https://i.ibb.co/3y4q8qSp/small333.png" 
+                             onclick="changeImage(this)"
+                             class="thumb-img w-full h-full object-cover opacity-60 hover:opacity-100 cursor-pointer transition-opacity">
+                    </div>
+                    <div class="aspect-video bg-gray-100 rounded-sm overflow-hidden">
+                        <img src="https://i.ibb.co/4wCFLx2j/small4444.png" 
+                             onclick="changeImage(this)"
+                             class="thumb-img w-full h-full object-cover opacity-60 hover:opacity-100 cursor-pointer transition-opacity">
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col justify-center">
+                <span class="text-orange-500 font-medium tracking-[0.3em] text-[11px] uppercase block mb-4">vip small room</span>
+                <h1 class="text-5xl font-light text-slate-800 mb-4 tracking-tight">ห้องวีไอพีเล็ก</h1>
+                <p class="text-2xl text-slate-400 mb-8 font-light">฿800 <span class="text-sm uppercase tracking-widest ml-2">/ คืน</span></p>
+                
+                <div class="h-[1px] w-full bg-gray-100 mb-8"></div>
+                
+                <p class="text-gray-500 leading-relaxed font-light mb-10 text-lg">
+                    สัมผัสความเรียบง่ายที่ลงตัวในห้อง"วีไอพีเล็ก"ห้องพักที่ออกแบบมาเพื่อการพักผ่อนอย่างแท้จริง 
+                    มอบบรรยากาศที่สะอาด โปร่งโล่ง และเงียบสงบ เป็นส่วนตัว ครบครันด้วยสิ่งอำนวยความสะดวกที่คัดสรรมาอย่างดี 
+                    ไม่ว่าจะเดินทางมาทำงานหรือแวะพักผ่อนระหว่างทริป ห้องนี้พร้อมเป็นเซฟโซนที่เติมพลังให้คุณในราคาที่คุ้มค่าที่สุด
+                </p>
+
+                <div class="grid grid-cols-2 gap-y-6 gap-x-4 mb-12">
+                    <div class="flex items-center text-gray-500 text-sm font-light">
+                        <i class="fas fa-snowflake text-orange-500 w-8"></i> เครื่องปรับอากาศ
+                    </div>
+                    <div class="flex items-center text-gray-500 text-sm font-light">
+                        <i class="fas fa-wifi text-orange-500 w-8"></i> Wi-Fi ความเร็วสูง
+                    </div>
+                    <div class="flex items-center text-gray-500 text-sm font-light">
+                        <i class="fas fa-tv text-orange-500 w-8"></i> Smart TV
+                    </div>
+                    <div class="flex items-center text-gray-500 text-sm font-light">
+                        <i class="fas fa-bath text-orange-500 w-8"></i> เครื่องทำน้ำอุ่น
+                    </div>
+                    <div class="flex items-center text-gray-500 text-sm font-light">
+                        <i class="fas fa-coffee text-orange-500 w-8"></i> น้ำดื่มและกาแฟ
+                    </div>
+                    <div class="flex items-center text-gray-500 text-sm font-light">
+                        <i class="fas fa-shield-alt text-orange-500 w-8"></i> ระบบความปลอดภัย 24 ชม.
+                    </div>
+                    <div class="flex items-center text-gray-500 text-sm font-light">
+    <i class="fas fa-hot-tub text-orange-500 w-8"></i> อ่างจากุชชี่ส่วนตัว
+</div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="booking.html?room=vip-small" class="bg-orange-500 text-white text-center px-10 py-5 rounded-sm btn-anim shadow-lg shadow-orange-500/20 uppercase tracking-[0.2em] text-xs font-semibold flex-1">
+                        จองห้องพักนี้
+                    </a>
+                    <a href="https://line.me/ti/p/~0613087917" target="_blank" class="border border-slate-900 text-slate-900 text-center px-10 py-5 rounded-sm btn-anim uppercase tracking-[0.2em] text-xs font-semibold flex-1">
+                        สอบถามทาง LINE
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+    <div id="album-lightbox" class="fixed inset-0 z-50 bg-slate-950/95 opacity-0 invisible">
+        <button type="button" onclick="closeAlbum()" class="absolute top-5 right-5 z-10 h-12 w-12 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors" aria-label="Close album">
+            <i class="fas fa-times"></i>
+        </button>
+
+        <button type="button" onclick="showPrevImage()" class="absolute left-4 md:left-8 top-1/2 z-10 h-12 w-12 -translate-y-1/2 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors" aria-label="Previous image">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+
+        <button type="button" onclick="showNextImage()" class="absolute right-4 md:right-8 top-1/2 z-10 h-12 w-12 -translate-y-1/2 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors" aria-label="Next image">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+
+        <div class="flex h-full flex-col items-center justify-center gap-6 px-6 py-20" onclick="closeAlbum(event)">
+            <img id="album-image" src="https://i.ibb.co/wFXBMCSz/small111111.png" class="max-h-[76vh] max-w-full rounded-sm object-contain shadow-2xl" alt="VIP small room album image" onclick="event.stopPropagation()">
+            <div class="flex items-center gap-4 text-white">
+                <span id="album-counter" class="text-xs uppercase tracking-[0.25em] text-white/70">1 / 4</span>
+            </div>
+            <div id="album-thumbs" class="grid grid-cols-4 gap-2 md:gap-3 w-full max-w-xl"></div>
+        </div>
+    </div>
+    <footer class="bg-gray-50 py-16 mt-24 border-t border-gray-100">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <p class="text-[10px] text-gray-400 uppercase tracking-[0.4em]">MG Thungsong Hotel - Comfort meets Simplicity</p>
+        </div>
+    </footer>
+
+    <script>
+        const albumImages = [
+            'https://i.ibb.co/wFXBMCSz/small111111.png',
+            'https://i.ibb.co/xp3JZPp/small222.png',
+            'https://i.ibb.co/3y4q8qSp/small333.png',
+            'https://i.ibb.co/4wCFLx2j/small4444.png'
+        ];
+        let currentAlbumIndex = 0;
+
+        function changeImage(element) {
+            const mainImg = document.getElementById('main-image');
+            const thumbs = document.querySelectorAll('.thumb-img');
+            const selectedIndex = albumImages.indexOf(element.src);
+
+            mainImg.style.opacity = '0';
+
+            setTimeout(() => {
+                mainImg.src = element.src;
+                currentAlbumIndex = selectedIndex >= 0 ? selectedIndex : 0;
+                mainImg.style.opacity = '1';
+
+                thumbs.forEach(img => img.classList.remove('thumb-active'));
+                element.classList.add('thumb-active');
+            }, 150);
+        }
+
+        function syncAlbumImage() {
+            const albumImg = document.getElementById('album-image');
+            const albumCounter = document.getElementById('album-counter');
+            const albumThumbs = document.querySelectorAll('.album-thumb');
+
+            albumImg.src = albumImages[currentAlbumIndex];
+            albumCounter.textContent = `${currentAlbumIndex + 1} / ${albumImages.length}`;
+            albumThumbs.forEach((button, index) => {
+                button.classList.toggle('ring-2', index === currentAlbumIndex);
+                button.classList.toggle('ring-orange-500', index === currentAlbumIndex);
+                button.classList.toggle('opacity-100', index === currentAlbumIndex);
+                button.classList.toggle('opacity-60', index !== currentAlbumIndex);
+            });
+        }
+
+        function openAlbum() {
+            const mainImg = document.getElementById('main-image');
+            const imageIndex = albumImages.indexOf(mainImg.src);
+            currentAlbumIndex = imageIndex >= 0 ? imageIndex : currentAlbumIndex;
+            syncAlbumImage();
+            document.getElementById('album-lightbox').classList.add('is-open');
+            document.body.classList.add('album-open');
+        }
+
+        function closeAlbum(event) {
+            if (event && event.target !== event.currentTarget) return;
+            document.getElementById('album-lightbox').classList.remove('is-open');
+            document.body.classList.remove('album-open');
+        }
+
+        function showPrevImage() {
+            currentAlbumIndex = (currentAlbumIndex - 1 + albumImages.length) % albumImages.length;
+            syncAlbumImage();
+        }
+
+        function showNextImage() {
+            currentAlbumIndex = (currentAlbumIndex + 1) % albumImages.length;
+            syncAlbumImage();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const albumThumbs = document.getElementById('album-thumbs');
+            albumThumbs.innerHTML = albumImages.map((src, index) => `
+                <button type="button" onclick="currentAlbumIndex = ${index}; syncAlbumImage();" class="album-thumb aspect-video overflow-hidden rounded-sm bg-white/10 opacity-60 transition-opacity hover:opacity-100">
+                    <img src="${src}" class="h-full w-full object-cover" alt="Album thumbnail ${index + 1}">
+                </button>
+            `).join('');
+            syncAlbumImage();
+        });
+
+        document.addEventListener('keydown', (event) => {
+            const albumLightbox = document.getElementById('album-lightbox');
+            if (!albumLightbox.classList.contains('is-open')) return;
+
+            if (event.key === 'Escape') closeAlbum();
+            if (event.key === 'ArrowLeft') showPrevImage();
+            if (event.key === 'ArrowRight') showNextImage();
+        });
+    </script>
+
+</body>
+</html>

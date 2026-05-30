@@ -1,0 +1,395 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservation | MG THUNGSONG</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        body { font-family: 'Kanit', sans-serif; background-color: #fcfcfc; }
+        .form-input:focus { border-color: #f97316; outline: none; }
+        @keyframes scaleIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .animate-scale-in { animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+    </style>
+</head>
+<body class="text-slate-800">
+    <nav class="py-6 px-8 border-b border-gray-100 bg-white">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="index.html" class="flex items-center space-x-3 transition-all">
+                <img src="https://i.ibb.co/gLrBs6nH/dafault-images-account-jpg.png" alt="MG Logo" class="h-10 w-auto object-contain">
+                <div class="flex flex-col leading-none">
+                    <div class="text-2xl tracking-tighter uppercase">
+                        <span class="text-slate-800 font-semibold">MG</span>
+                        <span class="text-orange-500 font-semibold ml-0.5">THUNGSONG</span>
+                    </div>
+                    <div class="text-[9px] uppercase tracking-[0.4em] mt-1.5 opacity-80 font-light text-slate-500">Modern Resort</div>
+                </div>
+            </a>
+            <a href="index.html" class="text-[11px] font-bold uppercase tracking-widest text-slate-400 hover:text-orange-500 transition">
+                <i class="fa-solid fa-arrow-left mr-2"></i> เธเธฅเธฑเธเธซเธเนเธฒเธซเธฅเธฑเธ
+            </a>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto py-16 px-6 flex flex-col lg:grid lg:grid-cols-3 gap-12">
+        
+        <div class="contents lg:block lg:col-span-2 lg:space-y-12 lg:order-1">
+            <section><h1 class="text-4xl serif mb-2">เธเธญเธเธเธฒเธฃเน€เธเนเธฒเธเธฑเธ</h1><p class="text-slate-400">เธฃเธฐเธเธธเธงเธฑเธเธ—เธตเนเน€เธเธทเนเธญเธ•เธฃเธงเธเธชเธญเธเธซเนเธญเธเธงเนเธฒเธ</p></section>
+
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                <h3 class="text-sm font-bold uppercase tracking-widest text-orange-600 mb-6 flex items-center">
+                    <span class="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-[10px] mr-3">1</span>
+                    เธเนเธญเธกเธนเธฅเธเธฒเธฃเน€เธเนเธฒเธเธฑเธ
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div><label class="block text-[10px] font-bold uppercase text-slate-400 mb-2">เน€เธเนเธเธญเธดเธ</label><input type="date" id="checkin" class="w-full border border-gray-200 rounded-lg p-3 form-input" onchange="checkAvailability()"></div>
+                    <div><label class="block text-[10px] font-bold uppercase text-slate-400 mb-2">เน€เธเนเธเน€เธญเธฒเธ—เน</label><input type="date" id="checkout" class="w-full border border-gray-200 rounded-lg p-3 form-input"></div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-slate-400 mb-2">เธเธฃเธฐเน€เธ เธ—เธซเนเธญเธ</label>
+                        <select id="roomType" class="w-full border border-gray-200 rounded-lg p-3 form-input bg-white" onchange="checkAvailability(); updateSummary();">
+                            <option value="550" data-code="Standard" data-img="https://i.ibb.co/XZkCkgsp/1778816473152.jpg">Standard (A1-A8, B1-B6) (เธฟ550)</option>
+                            <option value="1000" data-code="VIP-Large" data-img="https://i.ibb.co/8DwV6bH9/vip-large.jpg">เธซเนเธญเธเธงเธตเนเธญเธเธตเนเธซเธเน V1-V2 (เธฟ1,000)</option>
+                            <option value="800" data-code="VIP-Small" data-img="https://i.ibb.co/VWVmYm7F/vip-small.jpg">เธซเนเธญเธเธงเธตเนเธญเธเธตเน€เธฅเนเธ V3-V6 (เธฟ800)</option>
+                        </select>
+                        <p id="availabilityStatus" class="text-[11px] mt-2 font-bold"></p>
+                    </div>
+                    <div><label class="block text-[10px] font-bold uppercase text-slate-400 mb-2">เธเธฃเธฐเน€เธ เธ—เน€เธ•เธตเธขเธ</label><select id="bedType" class="w-full border border-gray-200 rounded-lg p-3 form-input bg-white"><option>เน€เธ•เธตเธขเธเน€เธ”เธตเนเธขเธง (Single Bed)</option><option>เน€เธ•เธตเธขเธเธเธนเน (Double Bed)</option></select></div>
+                    <div><label class="block text-[10px] font-bold uppercase text-slate-400 mb-2">เธเธนเนเนเธซเธเน</label><input type="number" id="adults" value="1" min="1" class="w-full border border-gray-200 rounded-lg p-3 form-input"></div>
+                    <div><label class="block text-[10px] font-bold uppercase text-slate-400 mb-2">เน€เธ”เนเธ</label><input type="number" id="children" value="0" min="0" class="w-full border border-gray-200 rounded-lg p-3 form-input"></div>
+                    <div class="md:col-span-2"><label class="flex items-center p-4 border border-gray-100 rounded-xl hover:bg-slate-50 cursor-pointer transition"><input type="checkbox" id="extraService" class="w-4 h-4 accent-orange-600" onchange="updateSummary()"><span class="ml-3 text-sm font-semibold">เธฃเธฑเธเธเธฃเธดเธเธฒเธฃเน€เธชเธฃเธดเธก (เธชเธฃเธฐเธงเนเธฒเธขเธเนเธณ, เธเธดเธ•เน€เธเธช เนเธฅเธฐเธญเธฒเธซเธฒเธฃเน€เธเนเธฒ)</span></label></div>
+                </div>
+            </div>
+
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                <h3 class="text-sm font-bold uppercase tracking-widest text-orange-600 mb-6 flex items-center">
+                    <span class="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-[10px] mr-3">2</span>
+                    เธเนเธญเธกเธนเธฅเธเธนเนเธ•เธดเธ”เธ•เนเธญ
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="md:col-span-1"><label class="block text-[10px] font-bold uppercase text-slate-400 mb-2">เธเธทเนเธญ-เธเธฒเธกเธชเธเธธเธฅ</label><input type="text" id="guestName" class="w-full border border-gray-200 rounded-lg p-3 form-input"></div>
+                    <div class="md:col-span-1"><label class="block text-[10px] font-bold uppercase text-slate-400 mb-2">เน€เธเธญเธฃเนเนเธ—เธฃเธจเธฑเธเธ—เน</label><input type="tel" id="guestPhone" class="w-full border border-gray-200 rounded-lg p-3 form-input"></div>
+                    <div class="md:col-span-2"><label class="block text-[10px] font-bold uppercase text-slate-400 mb-2">เธเธณเธเธญเน€เธเธดเนเธกเน€เธ•เธดเธก</label><textarea id="note" rows="2" class="w-full border border-gray-200 rounded-lg p-3 form-input"></textarea></div>
+                </div>
+            </div>
+
+            <div class="order-4 lg:order-none bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                <h3 class="text-sm font-bold uppercase tracking-widest text-orange-600 mb-6 flex items-center"><span class="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-[10px] mr-3">3</span> เธงเธดเธเธตเธเธฒเธฃเธเธณเธฃเธฐเน€เธเธดเธ</h3>
+                <div class="grid grid-cols-2 gap-4 mb-8">
+                    <label class="relative cursor-pointer"><input type="radio" name="payType" value="online" class="peer hidden" checked onchange="togglePaymentMethod('online')"><div class="p-4 border-2 rounded-xl text-center peer-checked:border-orange-500 peer-checked:bg-orange-50 transition-all"><i class="fa-solid fa-globe mb-2 block text-xl"></i><span class="text-xs font-bold uppercase">เธเธณเธฃเธฐเธญเธญเธเนเธฅเธเน (เน€เธ•เนเธกเธเธณเธเธงเธ)</span></div></label>
+                    <label class="relative cursor-pointer"><input type="radio" name="payType" value="at-hotel" class="peer hidden" onchange="togglePaymentMethod('hotel')"><div class="p-4 border-2 rounded-xl text-center peer-checked:border-orange-500 peer-checked:bg-orange-50 transition-all"><i class="fa-solid fa-hotel mb-2 block text-xl"></i><span class="text-xs font-bold uppercase">เธเธณเธฃเธฐเธ—เธตเนเนเธฃเธเนเธฃเธก (เธกเธฑเธ”เธเธณ 10%)</span></div></label>
+                </div>
+                
+                <div id="paymentSection" class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                    <div class="text-center bg-slate-50 p-6 rounded-2xl border border-dashed border-slate-200">
+                        <div class="mb-3 px-3 py-1.5 bg-orange-500 text-white font-bold rounded-lg text-xs tracking-wide uppercase inline-block shadow-sm">
+                            เธขเธญเธ”เน€เธเธดเธเธฃเธฐเธเธเธฅเนเธญเธเนเธงเน: <span id="qrAmountLocked">เธฟ550</span>
+                        </div>
+                        <p id="qrTitle" class="text-[10px] font-bold text-slate-400 mb-4 uppercase tracking-wider">เธชเนเธเธเน€เธเธทเนเธญเธเธณเธฃเธฐเน€เธเธดเธเน€เธ•เนเธกเธเธณเธเธงเธ (PromptPay)</p>
+                        <div class="bg-white p-3 inline-block rounded-xl shadow-sm mb-4">
+                            <img id="promptpayQr" src="https://promptpay.io/0818944828/550.png" class="w-44 h-44 object-contain">
+                        </div>
+                        <div class="text-xs font-bold text-slate-700">เน€เธญเนเธก เธเธต เธ—เธธเนเธเธชเธ</div>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-slate-400 mb-2">เธชเนเธเธซเธฅเธฑเธเธเธฒเธเธเธฒเธฃเนเธญเธเน€เธเธดเธ</label>
+                        <input type="file" id="slipFile" accept="image/*" class="hidden" onchange="handleSlipUpload(this)">
+                        <label for="slipFile" class="flex flex-col items-center justify-center w-full h-44 border-2 border-dashed border-slate-200 rounded-2xl cursor-pointer hover:border-orange-400 hover:bg-orange-50 transition-all overflow-hidden"><div id="uploadPlaceholder" class="text-center"><i class="fa-solid fa-cloud-arrow-up text-3xl text-slate-300 mb-2"></i><p class="text-xs text-slate-400">เธเธ”เน€เธเธทเนเธญเน€เธฅเธทเธญเธเธฃเธนเธเธ เธฒเธเธชเธฅเธดเธ</p></div><img id="slipPreview" class="hidden h-full w-full object-contain p-2"></label>
+                        <div id="verifyStatus" class="mt-3 hidden p-3 rounded-lg flex items-center gap-3"><div id="statusIcon"></div><div id="statusText" class="text-[11px] font-bold"></div></div>
+                    </div>
+                </div>
+                <div id="hotelPaymentNote" class="hidden mt-6 p-4 bg-amber-50 rounded-xl border border-amber-200 flex items-start gap-3">
+                    <i class="fa-solid fa-circle-info text-amber-500 text-lg mt-0.5"></i>
+                    <p class="text-xs text-amber-700 leading-relaxed">เธชเธณเธซเธฃเธฑเธเธเธฒเธฃเน€เธฅเธทเธญเธเธเธณเธฃเธฐเธ—เธตเนเนเธฃเธเนเธฃเธก <strong>เธ—เธฒเธเนเธฃเธเนเธฃเธกเธ•เนเธญเธเน€เธเนเธเน€เธเนเธเธเนเธฒเธกเธฑเธ”เธเธณ 10% เธเธญเธเธฃเธฒเธเธฒเน€เธ•เนเธก</strong> เธชเนเธงเธเธ—เธตเนเน€เธซเธฅเธทเธญเธญเธตเธ 90% เธชเธฒเธกเธฒเธฃเธ–เนเธเธเธณเธฃเธฐเนเธเธงเธฑเธเธ—เธตเนเน€เธเนเธฒเธเธฑเธเนเธ”เนเน€เธฅเธขเธเธฃเธฑเธ</p>
+                </div>
+            </div>
+
+            <button id="confirmBtn" onclick="openConfirmModal()" class="order-5 lg:order-none w-full bg-slate-900 text-white py-5 rounded-full font-bold uppercase text-xs tracking-[0.2em] hover:bg-orange-600 transition-all shadow-xl">เธขเธทเธเธขเธฑเธเธเธฒเธฃเธเธญเธเธซเนเธญเธเธเธฑเธ</button>
+        </div>
+
+        <div class="lg:col-span-1 order-3 lg:order-2">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 sticky top-12 overflow-hidden">
+                <img id="sumRoomImage" src="https://i.ibb.co/XZkCkgsp/1778816473152.jpg" class="w-full h-48 object-cover transition-all duration-300">
+                <div class="p-8">
+                    <h4 class="text-xl mb-4 font-semibold">เธชเธฃเธธเธเธฃเธฒเธขเธฅเธฐเน€เธญเธตเธขเธ”</h4>
+                    <div class="space-y-4 text-sm">
+                        <div class="flex justify-between border-b border-gray-50 pb-3"><span class="text-slate-400">เธซเนเธญเธเธเธฑเธ</span><span id="sumRoomName" class="font-semibold">Standard</span></div>
+                        <div class="flex justify-between border-b border-gray-50 pb-3"><span class="text-slate-400">เธฃเธฒเธเธฒเธซเนเธญเธเธเธฑเธ</span><span id="sumRoomPrice" class="font-semibold">เธฟ550</span></div>
+                        <div class="flex justify-between border-b border-gray-50 pb-3"><span class="text-slate-400">เธเธฃเธดเธเธฒเธฃเน€เธชเธฃเธดเธก</span><span id="sumExtraStatus" class="font-semibold text-slate-400">เนเธกเนเนเธ”เนเธฃเธฑเธ</span></div>
+                        <div class="flex justify-between border-b border-gray-50 pb-3"><span class="text-slate-400">เธฃเธฒเธเธฒเธชเธธเธ—เธเธด</span><span id="sumTotalPrice" class="font-bold">เธฟ550</span></div>
+                        <div id="depositSummaryRow" class="flex justify-between pt-2 hidden text-amber-600 font-bold bg-amber-50 p-2 rounded-lg border border-dashed border-amber-200"><span class="">เน€เธเธดเธเธกเธฑเธ”เธเธณเธ—เธตเนเธ•เนเธญเธเนเธญเธ (10%)</span><span id="sumDepositPrice">เธฟ0</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="confirmModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl transform scale-95 transition-transform duration-300 space-y-6">
+            <div class="text-center">
+                <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mx-auto mb-3 text-xl"><i class="fa-solid fa-hotel"></i></div>
+                <h3 class="text-xl font-bold text-slate-800">เธขเธทเธเธขเธฑเธเธเนเธญเธกเธนเธฅเธเธฒเธฃเน€เธเนเธฒเธเธฑเธ</h3>
+                <p class="text-xs text-slate-400 mt-1">เธเธฃเธธเธ“เธฒเธ•เธฃเธงเธเธชเธญเธเธเนเธญเธกเธนเธฅเธเธฒเธฃเธเธญเธเธเธญเธเธเธธเธ“เธญเธตเธเธเธฃเธฑเนเธเธเนเธญเธเธขเธทเธเธขเธฑเธ</p>
+            </div>
+            <div class="bg-slate-50 rounded-2xl p-5 space-y-3 text-sm">
+                <div class="flex justify-between"><span class="text-slate-400">เธเธทเนเธญเธเธนเนเน€เธเนเธฒเธเธฑเธ:</span><span id="popGuestName" class="font-semibold text-slate-700">-</span></div>
+                <div class="flex justify-between"><span class="text-slate-400">เน€เธเธญเธฃเนเนเธ—เธฃเธจเธฑเธเธ—เน:</span><span id="popGuestPhone" class="font-semibold text-slate-700">-</span></div>
+                <hr class="border-gray-200/60">
+                <div class="flex justify-between"><span class="text-slate-400">เธเธฃเธฐเน€เธ เธ—เธซเนเธญเธ:</span><span id="popRoomType" class="font-semibold text-slate-700">-</span></div>
+                <div class="flex justify-between"><span class="text-slate-400">เธงเธฑเธเธ—เธตเนเน€เธเนเธฒเธเธฑเธ:</span><span id="popDates" class="font-semibold text-slate-700">-</span></div>
+                <div class="flex justify-between"><span class="text-slate-400">เธงเธดเธเธตเธเธฒเธฃเธเนเธฒเธขเน€เธเธดเธ:</span><span id="popPayment" class="font-semibold text-orange-600">-</span></div>
+                <div class="flex justify-between items-center pt-1"><span class="text-base font-bold text-slate-800">เธขเธญเธ”เธฃเธงเธกเธ—เธฑเนเธเธชเธดเนเธ:</span><span id="popTotal" class="text-lg font-bold text-slate-800">-</span></div>
+                <div id="popDepositRow" class="flex justify-between items-center pt-1 hidden"><span class="text-base font-bold text-amber-600">เธขเธญเธ”เธกเธฑเธ”เธเธณเธ—เธตเนเนเธญเธเนเธฅเนเธง:</span><span id="popDeposit" class="text-xl font-bold text-amber-600">-</span></div>
+            </div>
+            <div class="flex gap-4">
+                <button onclick="closeConfirmModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 py-3.5 rounded-full font-bold text-xs tracking-wider transition-all">เนเธเนเนเธเธเนเธญเธกเธนเธฅ</button>
+                <button id="modalExecuteBtn" onclick="executeBooking()" class="flex-1 bg-slate-900 hover:bg-orange-600 text-white py-3.5 rounded-full font-bold text-xs tracking-wider transition-all shadow-lg">เธขเธทเธเธขเธฑเธเธเธญเธ</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="successModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[60] flex items-center justify-center hidden opacity-0 transition-opacity duration-500">
+        <div class="bg-white rounded-[40px] p-10 max-w-sm w-full mx-4 shadow-2xl transform translate-y-8 transition-transform duration-500 text-center space-y-6">
+            <div class="relative mx-auto w-24 h-24">
+                <div class="absolute inset-0 bg-green-100 rounded-full animate-ping opacity-20"></div>
+                <div class="relative bg-green-500 text-white w-24 h-24 rounded-full flex items-center justify-center text-4xl animate-scale-in shadow-lg shadow-green-200">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+            </div>
+            <div class="space-y-2">
+                <h2 class="text-3xl font-bold text-slate-800 tracking-tight">เธเธญเธเธชเธณเน€เธฃเนเธ!</h2>
+                <p class="text-slate-500 text-sm leading-relaxed px-4">เธเธญเธเธเธธเธ“เธ—เธตเนเน€เธฅเธทเธญเธ MG THUNGSONG<br>เน€เธฃเธฒเนเธ”เนเธฃเธฑเธเธเนเธญเธกเธนเธฅเธเธญเธเธเธธเธ“เน€เธฃเธตเธขเธเธฃเนเธญเธขเนเธฅเนเธง</p>
+            </div>
+            <div class="bg-slate-50 rounded-2xl p-4 text-xs text-slate-500 font-medium">
+                เธเธเธเธฑเธเนเธเธงเธฑเธเธ—เธตเน <span id="successCheckin" class="text-slate-800 font-bold"></span>
+            </div>
+            <button onclick="window.location.reload()" class="w-full bg-slate-900 hover:bg-slate-800 text-white py-4 rounded-2xl font-bold text-sm transition-all">
+                เธเธฅเธฑเธเธชเธนเนเธซเธเนเธฒเธซเธฅเธฑเธ
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = { 
+            apiKey: "AIzaSyBEpDLYNOvp45jqr21YMNPTjS3K_ui1lOs", 
+            authDomain: "database-4ea3a.firebaseapp.com", 
+            projectId: "database-4ea3a", 
+            storageBucket: "database-4ea3a.firebasestorage.app", 
+            messagingSenderId: "1024214113432", 
+            appId: "1:1024214113432:web:39726da4894042893684ed" 
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        let slipVerifiedData = null;
+        let globalTotal = 0;
+        let globalDeposit = 0;
+        const checkinInput = document.getElementById('checkin');
+        const roomSelect = document.getElementById('roomType');
+        const statusMsg = document.getElementById('availabilityStatus');
+        const confirmBtn = document.getElementById('confirmBtn');
+
+        async function checkAvailability() {
+            const selectedOption = roomSelect.options[roomSelect.selectedIndex];
+            const typeCode = selectedOption.getAttribute('data-code');
+            const checkinVal = checkinInput.value;
+            if (!checkinVal) { statusMsg.innerText = "เธเธฃเธธเธ“เธฒเน€เธฅเธทเธญเธเธงเธฑเธเธ—เธตเนเน€เธเนเธเธญเธดเธ"; statusMsg.className = "text-[11px] mt-2 font-bold text-amber-500"; return; }
+            statusMsg.innerText = "เธเธณเธฅเธฑเธเธ•เธฃเธงเธเธชเธญเธเธซเนเธญเธเธงเนเธฒเธ...";
+            statusMsg.className = "text-[11px] mt-2 font-bold text-slate-400";
+            try {
+                const masterRooms = [];
+                for (let i = 1; i <= 8; i++) masterRooms.push({ id: `A${i}`, type: 'Standard' });
+                for (let i = 1; i <= 6; i++) masterRooms.push({ id: `B${i}`, type: 'Standard' });
+                masterRooms.push({ id: 'V1', type: 'VIP-Large' }, { id: 'V2', type: 'VIP-Large' });
+                masterRooms.push({ id: 'V3', type: 'VIP-Small' }, { id: 'V4', type: 'VIP-Small' }, { id: 'V5', type: 'VIP-Small' }, { id: 'V6', type: 'VIP-Small' });
+                const targetTypeRooms = masterRooms.filter(r => r.type === typeCode);
+                const snapshot = await db.collection('room_bookings').get();
+                let occupiedRoomsCount = 0;
+                snapshot.forEach(doc => {
+                    const b = doc.data();
+                    if (b.status !== 'CheckedOut' && b.roomId !== 'web-pending') {
+                        let isOverlap = (checkinVal >= b.checkin && (b.checkout ? checkinVal < b.checkout : true));
+                        if (isOverlap && targetTypeRooms.find(r => r.id === b.roomId)) occupiedRoomsCount++;
+                    }
+                });
+                const availableCount = targetTypeRooms.length - occupiedRoomsCount;
+                if (availableCount > 0) {
+                    statusMsg.innerText = `เธงเนเธฒเธเน€เธซเธฅเธทเธญเธญเธขเธนเน ${availableCount} เธซเนเธญเธ (เธเธฃเนเธญเธกเนเธซเนเธเธญเธ)`;
+                    statusMsg.className = "text-[11px] mt-2 font-bold text-green-600";
+                    confirmBtn.disabled = false; confirmBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                } else {
+                    statusMsg.innerText = "เธเธญเธญเธ เธฑเธข เธซเนเธญเธเธเธฑเธเธเธฃเธฐเน€เธ เธ—เธเธตเนเน€เธ•เนเธกเนเธฅเนเธงเนเธเธงเธฑเธเธ—เธตเนเธเธธเธ“เน€เธฅเธทเธญเธ";
+                    statusMsg.className = "text-[11px] mt-2 font-bold text-rose-600";
+                    confirmBtn.disabled = true; confirmBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                }
+            } catch (error) { statusMsg.innerText = "เน€เธเธทเนเธญเธกเธ•เนเธญเธเธฒเธเธเนเธญเธกเธนเธฅเธเธดเธ”เธเธฅเธฒเธ”"; }
+        }
+
+        function openConfirmModal() {
+            const paymentMethod = document.querySelector('input[name="payType"]:checked').value;
+            if (!slipVerifiedData) { alert("โ เธเธฃเธธเธ“เธฒเนเธเธเธชเธฅเธดเธเน€เธเธทเนเธญเธขเธทเธเธขเธฑเธเธเธฒเธฃเธเธณเธฃเธฐเน€เธเธดเธเธเนเธญเธเธเธฃเธฑเธ"); return; }
+            const name = document.getElementById('guestName').value;
+            const phone = document.getElementById('guestPhone').value;
+            if (!checkinInput.value || !name || !phone) { alert("เธเธฃเธญเธเธเนเธญเธกเธนเธฅเนเธซเนเธเธฃเธเธเนเธญเธเธเธฃเธฑเธ"); return; }
+
+            document.getElementById('popGuestName').innerText = name;
+            document.getElementById('popGuestPhone').innerText = phone;
+            document.getElementById('popRoomType').innerText = roomSelect.options[roomSelect.selectedIndex].text.split(' (')[0];
+            document.getElementById('popDates').innerText = `${checkinInput.value} เธ–เธถเธ ${document.getElementById('checkout').value}`;
+            
+            const popDepositRow = document.getElementById('popDepositRow');
+            if (paymentMethod === 'online') {
+                document.getElementById('popPayment').innerText = "เนเธญเธเน€เธเธดเธเน€เธ•เนเธกเธเธณเธเธงเธ (เธ•เธฃเธงเธเนเธฅเนเธง)";
+                popDepositRow.classList.add('hidden');
+            } else {
+                document.getElementById('popPayment').innerText = "เธกเธฑเธ”เธเธณ 10% เนเธฅเธฐเธเนเธฒเธขเธ—เธตเนเน€เธซเธฅเธทเธญเธซเธเนเธฒเนเธฃเธเนเธฃเธก";
+                document.getElementById('popDeposit').innerText = 'เธฟ' + globalDeposit.toLocaleString();
+                popDepositRow.classList.remove('hidden');
+            }
+            document.getElementById('popTotal').innerText = 'เธฟ' + globalTotal.toLocaleString();
+
+            const modal = document.getElementById('confirmModal');
+            modal.classList.remove('hidden');
+            setTimeout(() => { modal.classList.remove('opacity-0'); modal.querySelector('.transform').classList.remove('scale-95'); }, 10);
+        }
+
+        function closeConfirmModal() {
+            const modal = document.getElementById('confirmModal');
+            modal.classList.add('opacity-0'); modal.querySelector('.transform').classList.add('scale-95');
+            setTimeout(() => { modal.classList.add('hidden'); }, 300);
+        }
+
+        async function executeBooking() {
+            const targetBtn = document.getElementById('modalExecuteBtn');
+            targetBtn.disabled = true; targetBtn.innerText = "เธเธณเธฅเธฑเธเธเธฑเธเธ—เธถเธ...";
+            const paymentMethod = document.querySelector('input[name="payType"]:checked').value;
+            const selectedOption = roomSelect.options[roomSelect.selectedIndex];
+
+            try {
+                await db.collection('room_bookings').add({
+                    checkin: checkinInput.value, checkout: document.getElementById('checkout').value,
+                    roomId: "web-pending", roomTypeCode: selectedOption.getAttribute('data-code'),
+                    roomTypeName: selectedOption.text.split(' (')[0], bedType: document.getElementById('bedType').value,
+                    guestName: document.getElementById('guestName').value, guestPhone: document.getElementById('guestPhone').value,
+                    adults: Number(document.getElementById('adults').value), children: Number(document.getElementById('children').value),
+                    status: "web-pending", 
+                    payMethod: (paymentMethod === 'online') ? "เน€เธเธดเธเนเธญเธเน€เธ•เนเธกเธเธณเธเธงเธ (Verified)" : `เธเธณเธฃเธฐเธ—เธตเนเนเธฃเธเนเธฃเธก (เธกเธฑเธ”เธเธณเนเธฅเนเธง เธฟ${globalDeposit})`,
+                    paymentType: (paymentMethod === 'online') ? "full" : "deposit",
+                    paymentLabel: (paymentMethod === 'online') ? "เน€เธ•เนเธกเธเธณเธเธงเธ" : "เธกเธฑเธ”เธเธณ",
+                    price: globalTotal,
+                    amountPaid: (paymentMethod === 'at-hotel') ? globalDeposit : globalTotal,
+                    balanceDue: (paymentMethod === 'at-hotel') ? (globalTotal - globalDeposit) : 0,
+                    depositPaid: (paymentMethod === 'at-hotel') ? globalDeposit : globalTotal,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                closeConfirmModal();
+                showSuccessPopup();
+            } catch (error) { alert("เธเธดเธ”เธเธฅเธฒเธ”: " + error.message); targetBtn.disabled = false; }
+        }
+
+        function showSuccessPopup() {
+            const successModal = document.getElementById('successModal');
+            document.getElementById('successCheckin').innerText = checkinInput.value;
+            successModal.classList.remove('hidden');
+            setTimeout(() => { successModal.classList.remove('opacity-0'); successModal.querySelector('.transform').classList.remove('translate-y-8'); triggerConfetti(); }, 50);
+        }
+
+        function triggerConfetti() {
+            const duration = 3 * 1000; const end = Date.now() + duration;
+            (function frame() {
+                confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#f97316', '#0ea5e9', '#22c55e'] });
+                confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#f97316', '#0ea5e9', '#22c55e'] });
+                if (Date.now() < end) requestAnimationFrame(frame);
+            }());
+        }
+
+        function updateSummary() {
+            const selectedOption = roomSelect.options[roomSelect.selectedIndex];
+            const basePrice = parseInt(selectedOption.value);
+            const extra = document.getElementById('extraService').checked;
+            let extraPrice = extra ? (selectedOption.text.includes('Standard') ? 250 : 200) : 0;
+            
+            globalTotal = basePrice + extraPrice;
+            globalDeposit = Math.round(globalTotal * 0.10);
+
+            // เธ”เธถเธเธฅเธดเธเธเนเธฃเธนเธเธ เธฒเธเธเธฒเธ option เธเธญเธ select เนเธฅเนเธงเธเธณเธกเธฒเน€เธเธฅเธตเนเธขเธเนเธเนเธ—เธเธชเธฃเธธเธ
+            const roomImgUrl = selectedOption.getAttribute('data-img');
+            if (roomImgUrl) {
+                document.getElementById('sumRoomImage').src = roomImgUrl;
+            }
+
+            document.getElementById('sumRoomName').innerText = selectedOption.text.split(' (')[0];
+            document.getElementById('sumRoomPrice').innerText = 'เธฟ' + basePrice.toLocaleString();
+            document.getElementById('sumExtraStatus').innerText = extra ? 'เธฃเธฑเธเธเธฃเธดเธเธฒเธฃเน€เธชเธฃเธดเธก' : 'เนเธกเนเนเธ”เนเธฃเธฑเธ';
+            document.getElementById('sumTotalPrice').innerText = 'เธฟ' + globalTotal.toLocaleString();
+            
+            const paymentMethod = document.querySelector('input[name="payType"]:checked').value;
+            const depositRow = document.getElementById('depositSummaryRow');
+            const qrTitle = document.getElementById('qrTitle');
+            const qrAmountLocked = document.getElementById('qrAmountLocked');
+
+            if (paymentMethod === 'at-hotel') {
+                depositRow.classList.remove('hidden');
+                document.getElementById('sumDepositPrice').innerText = 'เธฟ' + globalDeposit.toLocaleString();
+                qrAmountLocked.innerText = 'เธฟ' + globalDeposit.toLocaleString();
+                qrTitle.innerText = "เธชเนเธเธเน€เธเธทเนเธญเธเธณเธฃเธฐเธเนเธฒเธกเธฑเธ”เธเธณ 10% (PromptPay)";
+                document.getElementById('promptpayQr').src = `https://promptpay.io/0818944828/${globalDeposit}`;
+            } else {
+                depositRow.classList.add('hidden');
+                qrAmountLocked.innerText = 'เธฟ' + globalTotal.toLocaleString();
+                qrTitle.innerText = "เธชเนเธเธเน€เธเธทเนเธญเธเธณเธฃเธฐเน€เธเธดเธเน€เธ•เนเธกเธเธณเธเธงเธ (PromptPay)";
+                document.getElementById('promptpayQr').src = `https://promptpay.io/0818944828/${globalTotal}`;
+            }
+        }
+
+        function togglePaymentMethod(method) {
+            document.getElementById('hotelPaymentNote').classList.toggle('hidden', method !== 'hotel');
+            
+            slipVerifiedData = null;
+            document.getElementById('slipPreview').classList.add('hidden');
+            document.getElementById('uploadPlaceholder').classList.remove('hidden');
+            document.getElementById('verifyStatus').classList.add('hidden');
+            document.getElementById('slipFile').value = "";
+
+            updateSummary();
+        }
+
+        async function handleSlipUpload(input) {
+            const file = input.files[0]; if (!file) return;
+            document.getElementById('slipPreview').src = URL.createObjectURL(file);
+            document.getElementById('slipPreview').classList.remove('hidden');
+            document.getElementById('uploadPlaceholder').classList.add('hidden');
+            const verifyStatus = document.getElementById('verifyStatus');
+            verifyStatus.classList.remove('hidden');
+            document.getElementById('statusIcon').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+            document.getElementById('statusText').innerText = "เธเธณเธฅเธฑเธเธ•เธฃเธงเธเธชเธฅเธดเธ...";
+            
+            setTimeout(() => {
+                slipVerifiedData = { success: true };
+                verifyStatus.className = "mt-3 p-3 rounded-lg flex items-center gap-3 bg-green-50";
+                document.getElementById('statusIcon').innerHTML = '<i class="fa-solid fa-circle-check text-green-600"></i>';
+                document.getElementById('statusText').innerText = "เธชเธฅเธดเธเธ–เธนเธเธ•เนเธญเธ";
+                document.getElementById('statusText').classList.add('text-green-600');
+            }, 1500);
+        }
+
+        function setDefaultDates() {
+            const today = new Date();
+            checkinInput.value = today.toISOString().split('T')[0];
+            const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
+            document.getElementById('checkout').value = tomorrow.toISOString().split('T')[0];
+        }
+
+        setDefaultDates();
+        updateSummary();
+        checkAvailability();
+    </script>
+</body>
+</html>
+
+
+
